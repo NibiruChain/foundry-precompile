@@ -24,6 +24,7 @@ jobs:
       - name: 📚 Install forge dependencies
         run: |
           forge install --no-git --silent
+          forge install foundry-rs/forge-std@v1.7.0
 
       # ---------- Run the test suite ----------
       - name: 🧪 Run forge test
