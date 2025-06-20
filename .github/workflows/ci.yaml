@@ -16,7 +16,7 @@ jobs:
 
       # ---------- Foundry toolchain (forge + cast) ----------
       - name: 📦 Install Foundry
-        uses: foundry-rs/setup-foundry@v1
+        uses: foundry-rs/foundry-toolchain@v1
         with:
           version: latest           # pin to a commit or tag if you prefer reproducibility
 
