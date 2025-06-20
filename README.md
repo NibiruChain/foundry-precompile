@@ -2,7 +2,7 @@
 
 ## 🧩 What problem does this repo solve?
 
-`NibiruOracleChainLinkLike.latestAnswer()` calls a **Nibiru oracle precompile** hard‑coded at `0x000…0801`.
+`NibiruOracleChainlinkLike.latestAnswer()` calls a **Nibiru oracle precompile** hard‑coded at `0x000…0801`.
 On a local Foundry test‑VM this address has **no code and no storage**, so every call reverts with a custom error such as `FeedNotFound("unibi:uusd")`.
 
 ## 🛠️ How we fixed it
@@ -21,7 +21,7 @@ Result: your adapter contract reads prices just like on‑chain, and tests pass 
 ├── src/
 │   ├── IOracle.sol          # Interface + global constants
 │   ├── OracleMock.sol       # Mock that we etch
-│   ├── NibiruOracleChainLinkLike.sol  # The adapter under test
+│   ├── NibiruOracleChainlinkLike.sol  # The adapter under test
 │   └── ChainLinkAggregatorV3Interface.sol  # External interface
 └── test/
     └── OraclePrecompile.t.sol  # Proof‑of‑concept test
@@ -54,7 +54,7 @@ mock = new OracleMock();            // deploy standalone mock
 vm.etch(PRECOMPILE, address(mock).code);  // move its *code* into 0x…0801
 OracleMock(PRECOMPILE).setPrice("unibi:uusd", 100e18); // now write storage
 
-feed = new NibiruOracleChainLinkLike("unibi:uusd", 18);
+feed = new NibiruOracleChainlinkLike("unibi:uusd", 18);
 ```
 
 * Always set storage **after** the etch.

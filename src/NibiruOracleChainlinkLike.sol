@@ -4,7 +4,7 @@ pragma solidity >=0.8.19;
 import "./IOracle.sol";
 import "./ChainLinkAggregatorV3Interface.sol";
 
-/// @title NibiruOracleChainLinkLike
+/// @title NibiruOracleChainlinkLike
 /// @notice This contract serves as a ChainLink-like data feed that sources its
 /// "answer" value from the Nibiru Oracle system. The Nibiru Oracle gives price
 /// data with 18 decimals universally, and that 18-decimal answer is scaled to
@@ -17,7 +17,7 @@ import "./ChainLinkAggregatorV3Interface.sol";
 ///  | |\  | _| |_ | |_) |_| |_ | | \ \ | |__| |
 ///  |_| \_||_____||____/|_____||_|  \_\ \____/
 ///
-contract NibiruOracleChainLinkLike is ChainLinkAggregatorV3Interface {
+contract NibiruOracleChainlinkLike is ChainLinkAggregatorV3Interface {
     string public pair;
     uint8 public _decimals;
 
@@ -142,4 +142,3 @@ contract NibiruOracleChainLinkLike is ChainLinkAggregatorV3Interface {
         return latestTimestamp();
     }
 }
-

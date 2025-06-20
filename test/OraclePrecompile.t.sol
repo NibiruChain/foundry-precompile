@@ -3,13 +3,13 @@ pragma solidity ^0.8.24;
 
 import "forge-std/Test.sol";
 import "../src/OracleMock.sol";
-import "../src/NibiruOracleChainLinkLike.sol";
+import "../src/NibiruOracleChainlinkLike.sol";
 
 contract OraclePrecompileTest is Test {
     address constant PRECOMPILE = 0x0000000000000000000000000000000000000801;
 
     OracleMock mock;
-    NibiruOracleChainLinkLike feed;
+    NibiruOracleChainlinkLike feed;
 
     function setUp() public {
         mock = new OracleMock();
@@ -20,7 +20,7 @@ contract OraclePrecompileTest is Test {
 
         OracleMock(PRECOMPILE).setPrice("unibi:uusd", 100e18);
 
-        feed = new NibiruOracleChainLinkLike("unibi:uusd", 18);
+        feed = new NibiruOracleChainlinkLike("unibi:uusd", 18);
     }
 
     function testLatestAnswer() public {
