@@ -1,66 +1,77 @@
-## Foundry
+# Nibiru Oracle Mocking Demo (Foundry)
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## 🧩 What problem does this repo solve?
 
-Foundry consists of:
+`NibiruOracleChainLinkLike.latestAnswer()` calls a **Nibiru oracle precompile** hard‑coded at `0x000…0801`.
+On a local Foundry test‑VM this address has **no code and no storage**, so every call reverts with a custom error such as `FeedNotFound("unibi:uusd")`.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## 🛠️ How we fixed it
 
-## Documentation
+1. **OracleMock.sol** – a minimal contract that implements the same ABI as the precompile (`IOracle`). It lets tests push arbitrary prices via `setPrice(pair, price)`.
+2. **trick** – Foundry cheat code used to copy the mock’s *runtime bytecode* into the real precompile slot.
+3. **Write storage after etch** – because `vm.etch` transfers *code only*, the test calls `OracleMock(PRECOMPILE).setPrice(...)` *after* etching so the storage lives at the precompile address.
 
-https://book.getfoundry.sh/
+Result: your adapter contract reads prices just like on‑chain, and tests pass 🎉.
 
-## Usage
+## 📁 Project structure
 
-### Build
-
-```shell
-$ forge build
+```
+.
+├── foundry.toml             # Foundry config
+├── src/
+│   ├── IOracle.sol          # Interface + global constants
+│   ├── OracleMock.sol       # Mock that we etch
+│   ├── NibiruOracleChainLinkLike.sol  # The adapter under test
+│   └── ChainLinkAggregatorV3Interface.sol  # External interface
+└── test/
+    └── OraclePrecompile.t.sol  # Proof‑of‑concept test
 ```
 
-### Test
+## 🚀 Quick start
 
-```shell
-$ forge test
+```bash
+# 1) install Foundry once
+curl -L https://foundry.paradigm.xyz | bash && foundryup
+
+# 2) clone and test
+forge install                               # pulls forge‑std
+forge test -vvvv                           # should pass ✅
 ```
 
-### Format
+### What you should see
 
-```shell
-$ forge fmt
+```
+[PASS] testLatestAnswer() (gas: …)
 ```
 
-### Gas Snapshots
+No `EvmError: Revert`, price equals `100e18`.
 
-```shell
-$ forge snapshot
+## 🔍 Key lines to understand
+
+```solidity
+// test/OraclePrecompile.t.sol
+mock = new OracleMock();            // deploy standalone mock
+vm.etch(PRECOMPILE, address(mock).code);  // move its *code* into 0x…0801
+OracleMock(PRECOMPILE).setPrice("unibi:uusd", 100e18); // now write storage
+
+feed = new NibiruOracleChainLinkLike("unibi:uusd", 18);
 ```
 
-### Anvil
+* Always set storage **after** the etch.
 
-```shell
-$ anvil
-```
+## 🧑‍💻 Extending
 
-### Deploy
+* Add more pairs: `OracleMock(PRECOMPILE).setPrice("ubtc:uusd", 65000e18)` \* Need dynamic prices? Call `setPrice` inside each test or in `beforeEach`.
+* Re‑use the base setup by inheriting from `OraclePrecompileTest`.
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+## ⚠️ Troubleshooting
 
-### Cast
+| Symptom                              | Likely cause                      |
+| ------------------------------------ | --------------------------------- |
+| Revert with `FeedNotFound`           | Price not set **after** etch      |
+| Zero price returned                  | Same as above, or wrong decimals  |
+| `Identifier not found` compile error | Missing `import "./IOracle.sol";` |
 
-```shell
-$ cast <subcommand>
-```
+---
 
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Made with ❤️ & `vm.etch()` so you can iterate fast.
