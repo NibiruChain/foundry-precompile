@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛎️  Check out repository
+        uses: actions/checkout@v4
+
+      # ---------- Foundry toolchain (forge + cast) ----------
+      - name: 📦 Install Foundry
+        uses: foundry-rs/setup-foundry@v1
+        with:
+          version: latest           # pin to a commit or tag if you prefer reproducibility
+
+      # ---------- Dependencies (forge‑std, etc.) ----------
+      - name: 📚 Install forge dependencies
+        run: |
+          forge install --no-git --silent
+
+      # ---------- Run the test suite ----------
+      - name: 🧪 Run forge test
+        run: |
+          forge test -vvv
+
+      # ---------- Optional: upload artefacts ----------
+      # - name: Upload build artefacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: forge-out
+      #     path: out/
