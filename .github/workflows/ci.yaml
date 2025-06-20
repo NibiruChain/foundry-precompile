@@ -17,23 +17,18 @@ jobs:
       # ---------- Foundry toolchain (forge + cast) ----------
       - name: 📦 Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly         # or pin to a specific tag like "v1.6.3"
 
-      # ---------- Dependencies (forge‑std, etc.) ----------
-      - name: 📚 Install forge dependencies
+      # ---------- Clean and install dependencies ----------
+      - name: 📚 Clean and install forge dependencies
         run: |
-          forge install --no-git --silent
+          # Remove existing lib directory to avoid conflicts
+          rm -rf lib
+          # Install dependencies
           forge install foundry-rs/forge-std@v1.7.0
+          # Install any other dependencies from foundry.toml
+          forge install
 
       # ---------- Run the test suite ----------
       - name: 🧪 Run forge test
         run: |
           forge test -vvv
-
-      # ---------- Optional: upload artefacts ----------
-      # - name: Upload build artefacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: forge-out
-      #     path: out/
