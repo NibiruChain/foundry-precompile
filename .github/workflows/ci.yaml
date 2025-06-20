@@ -16,9 +16,8 @@ jobs:
 
       # ---------- Foundry toolchain (forge + cast) ----------
       - name: 📦 Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: latest           # pin to a commit or tag if you prefer reproducibility
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
 
       # ---------- Dependencies (forge‑std, etc.) ----------
       - name: 📚 Install forge dependencies
