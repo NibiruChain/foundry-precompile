@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
 
 jobs:
   test:
@@ -16,8 +16,9 @@ jobs:
 
       # ---------- Foundry toolchain (forge + cast) ----------
       - name: 📦 Install Foundry
-        run: |
-          curl -L https://foundry.paradigm.xyz | bash
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly         # or pin to a specific tag like "v1.6.3"
 
       # ---------- Dependencies (forge‑std, etc.) ----------
       - name: 📚 Install forge dependencies
